@@ -328,17 +328,17 @@
 <!-- 验证码页面 -->
 <div class="captcha-page" id="captchaPage">
     <div class="captcha-container">
-        <div class="captcha-title">🌸 给妹妹 🌸</div>
-        <div class="captcha-desc">完成验证，听哥哥给你唱歌</div>
+        <div class="captcha-title">🌸 妹妹 🌸</div>
+        <div class="captcha-desc">完成验证</div>
         <div id="captcha"></div>
-        <div class="captcha-footer">虫儿飞，花儿睡，哥哥想你</div>
+        <div class="captcha-footer">虫儿飞，花儿睡</div>
     </div>
 </div>
 
 <!-- 主网页 -->
 <div class="main-page" id="mainPage">
     <div style="text-align: center;">
-        <div class="title">给妹妹</div>
+        <div class="title">妹妹</div>
     </div>
 
     <div class="info">
@@ -353,17 +353,17 @@
     </div>
 
     <div class="music-area">
-        <div class="music-name">🎵 虫儿飞 · 唱给妹妹听 🎵</div>
+        <div class="music-name">🎵 虫儿飞 🎵</div>
         
         <!-- 隐藏的音频标签，用户无法操作 -->
         <audio id="bgMusic" class="hidden-audio" loop preload="auto">
-            <source src="妹妹.mp3" type="audio/mpeg">
+            <source src="https://videotourl.com/audio/1774152251830-55d516e4-64df-42b5-a175-b12ae263641c.mp3" type="audio/mpeg">
             您的浏览器不支持音频播放
         </audio>
         
         <!-- 歌词区域 -->
         <div class="lyrics-area" id="lyricsArea">
-            <div class="waiting-hint">🎵 歌曲正在播放，歌词会一句一句出现 🎵<br>就像哥哥慢慢唱给你听</div>
+            <div class="waiting-hint">🎵 播放中ing 🎵<br>妹妹</div>
         </div>
     </div>
 
@@ -390,23 +390,23 @@
             </div>
         </div>
         <div class="message" id="birthdayMsg">
-            等五月，等那一天，虫儿飞，飞到你身边
+            等五月，等那一天......
         </div>
     </div>
 
     <div class="footer">
-        <p>妹妹，哥哥记得你所有的事</p>
-        <p>你在那边要好好的</p>
+        <p>妹妹</p>
+        <p>我的心</p>
     </div>
 </div>
 
 <script src="https://static.geetest.com/v4/gt4.js"></script>
 <script>
     // ========== 妹妹的信息 ==========
-    const BIRTH_MONTH = 4;
+    const BIRTH_MONTH = 5;
     const BIRTH_DAY = 16;
     const PASS_YEAR = 2022;
-    const PASS_MONTH = 8;
+    const PASS_MONTH = 9;
     const PASS_DAY = 5;
 
     // ========== 《虫儿飞》歌词 ==========
@@ -506,7 +506,7 @@
         
         if (newIndex === -1 && currentTime > 0 && currentLyricIndex !== -2) {
             currentLyricIndex = -2;
-            lyricsArea.innerHTML = '<div class="waiting-hint">🎵 歌曲正在播放，歌词会一句一句出现 🎵<br>就像哥哥慢慢唱给你听</div>';
+            lyricsArea.innerHTML = '<div class="waiting-hint">🎵 播放中ing 🎵<br>妹妹</div>';
         }
     }
     
@@ -535,7 +535,7 @@
         if (playPromise !== undefined) {
             playPromise.catch(err => {
                 console.log("自动播放失败:", err);
-                lyricsArea.innerHTML = '<div class="waiting-hint">🎵 点击页面任意位置开始播放 🎵<br>虫儿飞，飞到你身边</div>';
+                lyricsArea.innerHTML = '<div class="waiting-hint">🎵 点击页面任意位置开始播放 🎵<br>虫儿飞</div>';
                 
                 // 添加一次点击事件来启动播放
                 const startPlay = () => {
