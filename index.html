@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>给妹妹 - 虫儿飞</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 验证码页面样式 */
+        .captcha-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #2a241f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .captcha-container {
+            background: #fffaf0;
+            padding: 40px 30px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid #eedbc4;
+        }
+
+        .captcha-title {
+            font-size: 1.5rem;
+            color: #5a3e2c;
+            font-family: 'Courier New', '华文楷书', monospace;
+            margin-bottom: 15px;
+        }
+
+        .captcha-desc {
+            font-size: 0.85rem;
+            color: #9c765b;
+            margin-bottom: 30px;
+            font-family: monospace;
+        }
+
+        #captcha {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .captcha-footer {
+            margin-top: 25px;
+            font-size: 0.7rem;
+            color: #b59173;
+            font-family: monospace;
+        }
+
+        /* 主网页样式 */
+        body {
+            background: #2a241f;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page {
+            max-width: 720px;
+            width: 100%;
+            background: #fffaf0;
+            padding: 35px 28px 45px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            font-family: 'Courier New', '宋体', monospace;
+            background: linear-gradient(to bottom, #fffcf0, #fff6e6);
+            background-image: repeating-linear-gradient(
+                transparent,
+                transparent 28px,
+                #e8ddcd 28px,
+                #e8ddcd 29px
+            );
+            background-size: 100% 29px;
+            background-position: 0 45px;
+            display: none;
+        }
+
+        .page.show {
+            display: block;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            text-align: center;
+            font-weight: normal;
+            color: #5a3e2c;
+            font-family: 'Courier New', '华文楷书', monospace;
+            margin-bottom: 35px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dac29c;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            letter-spacing: 2px;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0 35px;
+            font-size: 0.85rem;
+            color: #7a5a44;
+            border-left: 3px solid #dbbb97;
+            padding-left: 15px;
+            background: #fef6ea;
+            padding: 12px 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .info span {
+            font-weight: bold;
+            color: #8b4f2c;
+        }
+
+        .section {
+            margin: 45px 0 40px;
+            text-align: center;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: #9c765b;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .number {
+            font-size: 5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: #4e301f;
+            background: #fdf3e6;
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 20px;
+            letter-spacing: 8px;
+            box-shadow: inset 0 0 0 1px #f4e5d4, 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .small-note {
+            font-size: 0.75rem;
+            color: #b28866;
+            margin-top: 12px;
+        }
+
+        .music-area {
+            margin: 30px 0 30px;
+            padding: 20px 15px;
+            background: #fef5ea;
+            border: 1px solid #eedbc4;
+            border-radius: 8px;
+        }
+
+        .music-name {
+            font-size: 0.85rem;
+            color: #8b644a;
+            text-align: center;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        /* 歌词显示区域 */
+        .lyrics-area {
+            margin-top: 20px;
+            padding: 35px 20px;
+            background: #fcf4e8;
+            border-radius: 28px;
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-lyric {
+            font-size: 1.3rem;
+            font-family: 'Courier New', '华文楷书', monospace;
+            color: #6b4a34;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+            word-break: keep-all;
+        }
+
+        .current-lyric.fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .current-lyric.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .waiting-hint {
+            text-align: center;
+            color: #bb987c;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        .birthday-box {
+            margin: 35px 0 35px;
+            padding: 20px 15px 25px;
+            background: #fdf5ea;
+            border: 1px solid #eedbc4;
+        }
+
+        .birthday-title {
+            font-size: 0.9rem;
+            text-align: center;
+            color: #a5714b;
+            margin-bottom: 20px;
+            background: #f9ecdd;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 4px 20px;
+            border-radius: 30px;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .timer-item {
+            background: #efe2d2;
+            padding: 10px 12px;
+            min-width: 75px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        .timer-num {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: #553927;
+        }
+
+        .timer-label {
+            font-size: 0.65rem;
+            color: #8b644a;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #866349;
+            margin-top: 18px;
+            padding: 12px;
+            background: #fcf0e2;
+            border-radius: 40px;
+        }
+
+        .message.highlight {
+            background: #f3e1cf;
+            color: #b1451c;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 45px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #b59173;
+            border-top: 1px solid #e5d2bc;
+            padding-top: 25px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 550px) {
+            .page {
+                padding: 25px 18px 35px;
+            }
+            .number {
+                font-size: 3.2rem;
+                letter-spacing: 4px;
+                padding: 4px 20px;
+            }
+            .timer-num {
+                font-size: 1.5rem;
+            }
+            .timer-item {
+                min-width: 60px;
+                padding: 6px 8px;
+            }
+            .title {
+                font-size: 1.5rem;
+            }
+            .current-lyric {
+                font-size: 1rem;
+            }
+            .captcha-container {
+                padding: 30px 20px;
+            }
+            .captcha-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 验证码页面 -->
+<div class="captcha-page" id="captchaPage">
+    <div class="captcha-container">
+        <div class="captcha-title">🌸 妹妹 🌸</div>
+        <div class="captcha-desc">完成验证进入</div>
+        <div id="captcha"></div>
+        <div class="captcha-footer">虫儿飞，花儿睡......</div>
+    </div>
+</div>
+
+<!-- 主网页 -->
+<div class="page" id="mainPage">
+    <div style="text-align: center;">
+        <div class="title">给妹妹</div>
+    </div>
+
+    <div class="info">
+        <div>生日：<span>2016年5月16日</span></div>
+        <div>离开：<span>2022年9月5日</span></div>
+    </div>
+
+    <div class="section">
+        <div class="label">离开我多少天，我就想了你多少天</div>
+        <div class="number" id="daysCount">----</div>
+        <div class="small-note">每一天，都没有忘记</div>
+    </div>
+
+    <div class="music-area">
+        <div class="music-name">🎵 虫儿飞 🎵</div>
+        
+        <!-- 歌词区域 -->
+        <div class="lyrics-area" id="lyricsArea">
+            <div class="waiting-hint">🎵 播放中ing 🎵<br>妹妹</div>
+        </div>
+    </div>
+
+    <div class="birthday-box">
+        <div style="text-align: center;">
+            <div class="birthday-title">🎈 距离下一个5月16日 🎈</div>
+        </div>
+        <div class="timer">
+            <div class="timer-item">
+                <div class="timer-num" id="cdDays">--</div>
+                <div class="timer-label">天</div>
+            </div>
+            <div class="timer-item">
+                <div class="timer-num" id="cdHours">--</div>
+                <div class="timer-label">小时</div>
+            </div>
+            <div class="timer-item">
+                <div class="timer-num" id="cdMins">--</div>
+                <div class="timer-label">分钟</div>
+            </div>
+            <div class="timer-item">
+                <div class="timer-num" id="cdSecs">--</div>
+                <div class="timer-label">秒</div>
+            </div>
+        </div>
+        <div class="message" id="birthdayMsg">
+            等五月，等那一天......
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>妹妹</p>
+        <p>我的心</p>
+    </div>
+</div>
+
+<script src="https://static.geetest.com/v4/gt4.js"></script>
+<script>
+    // ========== 妹妹的信息 ==========
+    const BIRTH_MONTH = 4;
+    const BIRTH_DAY = 16;
+    const PASS_YEAR = 2022;
+    const PASS_MONTH = 8;
+    const PASS_DAY = 5;
+
+    // ========== 《虫儿飞》歌词 ==========
+    const LYRICS_DATA = [
+        { time: 0, text: "♪ 前奏 ♪" },
+        { time: 0, text: "黑黑的天空低垂，" },
+        { time: 5, text: "亮亮的繁星相随。" },
+        { time: 10, text: "虫儿飞，虫儿飞，" },
+        { time: 14, text: "你在思念谁？" },
+        { time: 40, text: "黑黑的天空低垂，" },
+        { time: 44, text: "亮亮的繁星相随。" },
+        { time: 49, text: "虫儿飞，虫儿飞，" },
+        { time: 54, text: "你在思念谁？" },
+        { time: 60, text: "天上的星星流泪，" },
+        { time: 65, text: "地上的玫瑰枯萎。" },
+        { time: 70, text: "冷风吹，冷风吹，" },
+        { time: 74, text: "只要有你陪。" },
+        { time: 80, text: "虫儿飞，花儿睡，" },
+        { time: 87, text: "一双又一对才美。" },
+        { time: 91, text: "不怕天黑，只怕心碎。" },
+        { time: 96, text: "不管累不累，也不管东南西北。" },
+        { time: 121, text: "黑黑的天空低垂，" },
+        { time: 126, text: "亮亮的繁星相随。" },
+        { time: 131, text: "虫儿飞，虫儿飞，" },
+        { time: 135, text: "你在思念谁？" },
+        { time: 142, text: "天上的星星流泪，" },
+        { time: 146, text: "地上的玫瑰枯萎。" },
+        { time: 151, text: "冷风吹，冷风吹，" },
+        { time: 156, text: "只要有你陪。" },
+        { time: 162, text: "虫儿飞，花儿睡，" },
+        { time: 167, text: "一双又一对才美。" },
+        { time: 172, text: "不怕天黑，只怕心碎。" },
+        { time: 177, text: "不管累不累，" },
+        { time: 180, text: "也不管东南西北。" },
+        { time: 185, text: "♪ 尾奏 · 想你，妹妹 ♪" }
+    ];
+
+    // ========== 音乐播放器 ==========
+    let audio = null;
+    let currentLyricIndex = -1;
+    let fadeTimeout = null;
+
+    const lyricsArea = document.getElementById('lyricsArea');
+    const captchaPage = document.getElementById('captchaPage');
+    const mainPage = document.getElementById('mainPage');
+
+    function showLyricText(text) {
+        if (fadeTimeout) clearTimeout(fadeTimeout);
+        
+        const currentDiv = lyricsArea.querySelector('.current-lyric');
+        if (currentDiv) {
+            currentDiv.classList.add('fade-out');
+            setTimeout(() => {
+                if (lyricsArea.contains(currentDiv)) {
+                    lyricsArea.removeChild(currentDiv);
+                }
+                createAndShowLyric(text);
+            }, 200);
+        } else {
+            lyricsArea.innerHTML = '';
+            createAndShowLyric(text);
+        }
+    }
+    
+    function createAndShowLyric(text) {
+        const lyricDiv = document.createElement('div');
+        lyricDiv.className = 'current-lyric fade-in';
+        lyricDiv.innerText = text;
+        lyricsArea.appendChild(lyricDiv);
+        
+        setTimeout(() => {
+            if (lyricDiv && lyricDiv.parentNode) {
+                lyricDiv.classList.remove('fade-in');
+            }
+        }, 300);
+    }
+    
+    function updateLyricByTime() {
+        if (!audio) return;
+        
+        const currentTime = audio.currentTime;
+        
+        let newIndex = -1;
+        for (let i = 0; i < LYRICS_DATA.length; i++) {
+            if (currentTime >= LYRICS_DATA[i].time) {
+                newIndex = i;
+            } else {
+                break;
+            }
+        }
+        
+        if (newIndex !== currentLyricIndex && newIndex !== -1) {
+            currentLyricIndex = newIndex;
+            const newLyric = LYRICS_DATA[newIndex].text;
+            showLyricText(newLyric);
+        }
+        
+        if (newIndex === -1 && currentTime > 0 && currentLyricIndex !== -2) {
+            currentLyricIndex = -2;
+            lyricsArea.innerHTML = '<div class="waiting-hint">🎵 播放中ing 🎵<br>妹妹</div>';
+        }
+    }
+    
+    function initAudio() {
+        audio = new Audio();
+        audio.src = "妹妹.mp3";
+        audio.preload = "auto";
+        audio.loop = true;  // 循环播放
+        
+        audio.addEventListener('loadedmetadata', () => {
+            console.log("歌曲加载完成，时长:", audio.duration);
+        });
+        
+        audio.addEventListener('timeupdate', () => {
+            updateLyricByTime();
+        });
+        
+        audio.addEventListener('error', (e) => {
+            console.error("音频加载失败", e);
+            lyricsArea.innerHTML = '<div class="waiting-hint">❌ 无法加载歌曲，请确认 "妹妹.mp3" 文件存在 ❌<br>💔 这首歌叫虫儿飞，妹妹以前很喜欢听 💔</div>';
+        });
+        
+        audio.addEventListener('canplay', () => {
+            console.log("歌曲可以播放了");
+        });
+        
+        // 开始播放
+        audio.play().catch(err => {
+            console.log("自动播放失败:", err);
+            // 如果自动播放失败，显示提示
+            lyricsArea.innerHTML = '<div class="waiting-hint">🎵 虫儿飞 🎵<br>妹妹</div>';
+            // 添加一次点击事件来启动播放
+            const startPlay = () => {
+                audio.play();
+                document.removeEventListener('click', startPlay);
+            };
+            document.addEventListener('click', startPlay);
+        });
+    }
+    
+    // ========== 纪念日计时 ==========
+    function getNow() {
+        return new Date();
+    }
+    
+    function getTodayStart(date = new Date()) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+    }
+    
+    function daysBetween(date1, date2) {
+        const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+        const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+        return Math.floor((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
+    }
+    
+    function getNextBirthday(referenceDate) {
+        const year = referenceDate.getFullYear();
+        const thisYearBirth = new Date(year, BIRTH_MONTH, BIRTH_DAY, 0, 0, 0, 0);
+        if (referenceDate >= thisYearBirth) {
+            return new Date(year + 1, BIRTH_MONTH, BIRTH_DAY, 0, 0, 0, 0);
+        } else {
+            return thisYearBirth;
+        }
+    }
+    
+    function isBirthdayToday(date) {
+        return date.getMonth() === BIRTH_MONTH && date.getDate() === BIRTH_DAY;
+    }
+    
+    function updateMemorial() {
+        const now = getNow();
+        const todayStart = getTodayStart(now);
+        
+        const passDate = new Date(PASS_YEAR, PASS_MONTH, PASS_DAY, 0, 0, 0, 0);
+        let daysPassed = daysBetween(todayStart, passDate);
+        if (daysPassed < 0) daysPassed = 0;
+        document.getElementById('daysCount').innerText = daysPassed;
+        
+        let nextBirth = getNextBirthday(todayStart);
+        let targetTime = new Date(nextBirth.getFullYear(), nextBirth.getMonth(), nextBirth.getDate(), 0, 0, 0, 0);
+        let remainMs = targetTime.getTime() - now.getTime();
+        
+        if (remainMs < 0) {
+            const newToday = getTodayStart(now);
+            const newNext = getNextBirthday(newToday);
+            const newTarget = new Date(newNext.getFullYear(), newNext.getMonth(), newNext.getDate(), 0, 0, 0, 0);
+            remainMs = newTarget.getTime() - now.getTime();
+            if (remainMs < 0) {
+                const finalTarget = new Date(newTarget.getFullYear() + 1, BIRTH_MONTH, BIRTH_DAY, 0, 0, 0, 0);
+                remainMs = finalTarget.getTime() - now.getTime();
+                if (remainMs < 0) remainMs = 0;
+            }
+        }
+        
+        const totalSec = Math.floor(remainMs / 1000);
+        const days = Math.floor(totalSec / 86400);
+        const hours = Math.floor((totalSec % 86400) / 3600);
+        const mins = Math.floor((totalSec % 3600) / 60);
+        const secs = totalSec % 60;
+        
+        document.getElementById('cdDays').innerText = days;
+        document.getElementById('cdHours').innerText = hours.toString().padStart(2, '0');
+        document.getElementById('cdMins').innerText = mins.toString().padStart(2, '0');
+        document.getElementById('cdSecs').innerText = secs.toString().padStart(2, '0');
+        
+        const isBirth = isBirthdayToday(todayStart);
+        const msgDiv = document.getElementById('birthdayMsg');
+        
+        if (isBirth) {
+            msgDiv.innerHTML = "🎂 妹妹，生日快乐......";
+            msgDiv.classList.add('highlight');
+        } else {
+            msgDiv.innerHTML = `还有 ${days} 天就是妹妹的生日了.`;
+            msgDiv.classList.remove('highlight');
+        }
+    }
+    
+    // ========== 极验验证码初始化 ==========
+    function initCaptcha() {
+        initGeetest4({
+            captchaId: '55574dfff9c40f2efeb5a26d6d188245',
+            product: 'float',
+            width: '100%'
+        }, function (captchaObj) {
+            captchaObj.appendTo("#captcha");
+            
+            // 监听验证成功事件
+            captchaObj.onSuccess(function () {
+                console.log("验证成功");
+                // 验证成功，隐藏验证码页面，显示主网页
+                captchaPage.style.opacity = '0';
+                setTimeout(() => {
+                    captchaPage.style.display = 'none';
+                    mainPage.classList.add('show');
+                    // 初始化音频并开始播放
+                    initAudio();
+                    // 启动纪念日计时器
+                    updateMemorial();
+                    setInterval(updateMemorial, 1000);
+                }, 500);
+            });
+            
+            // 监听验证失败/过期等（可选）
+            captchaObj.onError(function () {
+                console.log("验证出错");
+            });
+        });
+    }
+    
+    // 启动验证码
+    initCaptcha();
+</script>
+</body>
+</html>
