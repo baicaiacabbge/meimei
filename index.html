@@ -329,7 +329,7 @@
 <div class="captcha-page" id="captchaPage">
     <div class="captcha-container">
         <div class="captcha-title">🌸 妹妹 🌸</div>
-        <div class="captcha-desc">完成验证</div>
+        <div class="captcha-desc"></div>
         <div id="captcha"></div>
         <div class="captcha-footer">虫儿飞，花儿睡</div>
     </div>
@@ -347,7 +347,7 @@
     </div>
 
     <div class="section">
-        <div class="label">你走了多少天，我就想了你多少天</div>
+        <div class="label">你走了多少天，我就想了你多少天...</div>
         <div class="number" id="daysCount">----</div>
         <div class="small-note">每一天，都没有忘记</div>
     </div>
@@ -403,10 +403,10 @@
 <script src="https://static.geetest.com/v4/gt4.js"></script>
 <script>
     // ========== 妹妹的信息 ==========
-    const BIRTH_MONTH = 5;
+    const BIRTH_MONTH = 4;
     const BIRTH_DAY = 16;
     const PASS_YEAR = 2022;
-    const PASS_MONTH = 9;
+    const PASS_MONTH = 8;
     const PASS_DAY = 5;
 
     // ========== 《虫儿飞》歌词 ==========
@@ -625,10 +625,10 @@
         const msgDiv = document.getElementById('birthdayMsg');
         
         if (isBirth) {
-            msgDiv.innerHTML = "🎂 妹妹，生日快乐。虫儿飞，哥哥唱给你听。 🎂";
+            msgDiv.innerHTML = "🎂 妹妹，生日快乐...... 🎂";
             msgDiv.classList.add('highlight');
         } else {
-            msgDiv.innerHTML = `还有 ${days} 天就是妹妹的生日了。虫儿飞，等那一天。`;
+            msgDiv.innerHTML = `还有 ${days} 天就是妹妹的生日了`;
             msgDiv.classList.remove('highlight');
         }
     }
